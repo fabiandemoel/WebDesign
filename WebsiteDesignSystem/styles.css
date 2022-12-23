@@ -4,9 +4,20 @@
     font-family: sans-serif;
 }
 
+#home {
+    position: absolute;
+    filter: invert();
+    float: left;
+    top: 15px;
+    left: 15px;
+}
+
 nav{
     background-color: black;
     height: 100px;
+}
+
+nav ul {
     text-align: center;
 }
 
@@ -39,9 +50,18 @@ nav a:link {
     background-size: auto;
 }
 
+#current_colors {
+    background-image: url("./resources/images/diagonal_rainbow.png");
+}
+
 #fonts:hover {
     background-image: url("./resources/images/fonts.png");
     transition: background-image 0.2s;
+    background-size: 200px;
+}
+
+#current_fonts {
+    background-image: url("./resources/images/fonts.png");
     background-size: 200px;
 }
 
@@ -51,9 +71,20 @@ nav a:link {
     background-size: 200px;
 }
 
+#current_text-style {
+    background-image: url("./resources/images/textstyles.png");
+    background-size: 200px;
+}
+
 #additional-style:hover {
     background-image: url("./resources/images/additional_styles.png");
     transition: background-image 0.2s, color 0.5s;
+    color: black;
+    background-size: 200px;
+}
+
+#current_additional-style {
+    background-image: url("./resources/images/additional_styles.png");
     color: black;
     background-size: 200px;
 }
@@ -67,12 +98,18 @@ h1 {
     padding: 100px;
 }
 
+main {
+    margin-bottom: 150px;
+    padding: 0 50px;
+}
+
 p {
     display: block;
     text-align: center;
     font-size: 40px;
     position: relative;
     top: 50px;
+    padding: 50px 100px;
 }
 
 footer {
