@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="../resources/css/index.css" type="text/css" rel="stylesheet">
+</head>
+<body>
+  <header>
+      <nav>
+          <ul>
+              <li><a href="../index.html">Home</a></li>
+              <li><a href="../projects.html">Projects</a></li>
+              <li><a href="../about.html">About</a></li>
+              <li><a href="../contact.html">Contact</a></li>
+          </ul>
+      </nav>
+  </header>
+  <main>
+    <p>In early 2022 I worked as a Data Steward for a large public organisation in The Netherlands.
+    They hired me to focus on the Data Governance Strategy, I was also tasked with increasing the insight on the flow of data.
+    The team I was working in collected external data and processed this using data science methods.
+    They provided the results in the form of Tableau dashboards to various users and guided them through the insights that they had found.
+    Most of the data flowed in from a set of Azure Databricks databases, but at the time it was not possible to gain a good overview of all the dependencies between the Databricks tables and the Tableau workbooks.
+    </p>
+    <p>After assessing the available data and consulting the reporting team, I decided to make use of the Tableau API to extract the metadata. I was able to take this metadata and ingest it into Microsoft Purview's Data Catalog, which gave the users easy access to the dependencies and provided a graphical display of the Data lineage.
+    </p>
+    <h2>Getting the data</h2>
+    <p>Unfortunately Purview did not have a Tableau connector, though I heard through the grapevine they are working on one.
+      To get my hands on the right data, I created a data pipeline in Azure Databricks, using the Tableau API as source.
+      In order to securely access the organization's Tableau metadata, I made use of the Azure Key Vault to store my keys.
+    </p>
+    <p>The metadata Tableau provides consists of four different entities: workbooks, data sources, connections and source tables.
+      I was able to extract some of this data using the Tableau library, but some of the data was only available in the .tds files, which is delivered in XML format.
+      I searched Stackoverflow for a good parsing approach, I landed on this post which contains two viable solution.
+      I ended up taking the code in the second solution and putting it in a helper notebook.
+    </p>
+    <p>To comply to the structure of the team I was working with, I seperated the code into three python notebooks, one for each step in the ETL process.
+      In the last step I related all entities to each other and created data lineage tables at two different depths, one relating the workbooks to the data sources and another relating the workbooks to the source tables.
+      I saved the raw metadata in csv and the results of the later steps in hive tables in differente databases in Databricks.
+    </p>
+
+
+<p>First iteration</p>
+    <p>This method was a great way for me to learn how to work with PySpark and to understand the approach of a Data Science team.
+      But after some consultation with a data scientist and a data engineer on the team, we concluded that this method was not necessary for this process since it was more of a Data Engineering process than a Data Science process.
+      This allowed me to rewrite the code and optimize the process in a simpler structure:</p>
+
+
+<p>Second iteration</p>
+    <h2>Creating Purview entities</h2>
+<p>With the data collected and modelled, the time had come to display the data to the users.
+  The goal of this process was to help business users understand where the data came from and build trust and confidence in the value of the data.
+  To this end I required the tool used to be able to create insight into the dependencies of the Tableau workbooks, but also enable users to execute an impact analysis for expected changes to source tables.
+  Since the department I was working for was interested in Microsoft Purview, I developed a Proof of Concept using the Tableau metadata.
+  The Purview Data Catalog is based on entity types that can contain metadata for different types of data entities and processes.
+  Since there was no Tableau scanning capabilities at the time, I had to create custom entities that could contain the metadata for the workbooks, datasources and the connections between them.
+  Purview is able to scan Hive tables, so that entity type was already present, but for the Databricks notebooks I also had to make custom process entities.
+  To complete this task, I first tried using the Purview Studio interface, but this has limited capabilities and did not allow you create custom entities.
+  After some searching I came across two articles that helped me with this challenge: this DataSmackdown article and this Medium article by Piethein Strengholt.
+  So to achieve the desired results, I wrote a Databricks notebook that used the Purview API to create the entity types and entities based on the Tableau metadata.
+  I extracted the input and output per table and added that into the entity definition, allowing me to graphically construct the lineage:</p>
+
+
+<p>Data lineage in Purview</p>
+    <h2>Future consideration</h2>
+    <p>Due to constant development of Purview and the Databricks, in the future it will be possible to scan Tableau using Purview and construct a data lineage for Databricks using the Unity catalog.
+      I finished this project, but to allow for adjustment on the basis of future developments I committed the code and documentation for this solution to the teams Azure DevOps, using the version control guidelines set by the team.</p>
+
+    <h2>Conclusion</h2>
+    <p>For now the development team is able to use this solution to perform do an impact analysis when changing input tables.
+      Also the business users have a clear overview of the dependencies of the workbooks on the reporting end.
+      Most importantly, the overview of what data supports the insights presented in the Tableau workbooks has improved.
+      This enables business users to make data driven decisions with increased trust in the underlying data.</p>
+  </main>
+
+</body>
+</html>
